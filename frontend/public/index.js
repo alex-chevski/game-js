@@ -2,28 +2,43 @@ const $start = document.getElementById('start');
 const $game = document.getElementById('game');
 const $time = document.getElementById('time');
 const $result = document.getElementById('result');
-//переменная для установки таймера
+// панель времени
 const $timeHeader = document.getElementById('time-header');
-//переменная для установки результата
 const $resultHeader = document.getElementById('result-header');
+const $gameTime = document.getElementById('game-time');
 
+//установка счета и флага для начала игры
 let score = 0;
 let isGameStarted = false;
 
 $start.addEventListener('click', startGame);
 $game.addEventListener('click', handleBoxClick);
+$gameTime.addEventListener('input', setGameTime);
+
+function show($el) {
+  $el.classList.remove('hide');
+}
+
+function hide($el) {
+  $el.classList.add('hide');
+}
 
 function startGame() {
+  //установка начальных параметров
   score = 0;
+  $gameTime.setAttribute('disabled', true);
   setGameTime();
-  $timeHeader.classList.remove('hide');
-  $resultHeader.classList.add('hide');
-
-  $start.classList.add('hide');
+  hide($start);
+  show($timeHeader);
+  hide($resultHeader);
   isGameStarted = true;
   $game.style.background = '#fff';
+
+  //ф-ционал течения времени
   let interval = setInterval(function () {
-    let time = parseFloat($time.textContent);
+    let time = !isNaN(parseFloat($time.textContent))
+      ? parseFloat($time.textContent)
+      : 5.0;
 
     if (time <= 0) {
       clearInterval(interval);
@@ -40,25 +55,30 @@ function setGameScore() {
 }
 
 function setGameTime() {
-  let time = 5;
+  let time = !isNaN(parseInt($gameTime.value))
+    ? parseInt($gameTime.value)
+    : 5.0;
+
   $time.textContent = time.toFixed(1);
 }
 
 function endGame() {
   isGameStarted = false;
   setGameScore();
+  $gameTime.removeAttribute('disabled');
   //начальное окно после истечения таймера(Что показать что скрыть)
-  $start.classList.remove('hide');
+  show($start);
   $game.innerHTML = '';
   $game.style.backgroundColor = '#ccc';
-  $timeHeader.classList.add('hide');
-  $resultHeader.classList.remove('hide');
+  hide($timeHeader);
+  show($resultHeader);
 }
 
 function handleBoxClick(event) {
   if (!isGameStarted) {
     return;
   }
+  //cобытие нажатия на нужный квадрат
   if (event.target.dataset.box) {
     score++;
     renderBox();
@@ -67,9 +87,8 @@ function handleBoxClick(event) {
 
 function renderBox() {
   $game.textContent = '';
-  // создаем тег div
+  // cоздания блока на который будем нажимать
   let box = document.createElement('div');
-
   let boxSize = getRandom(30, 100);
   let gameSize = $game.getBoundingClientRect();
   let maxTop = gameSize.height - boxSize;
