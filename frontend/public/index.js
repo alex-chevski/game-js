@@ -1,20 +1,39 @@
 const $start = document.getElementById('start');
 const $game = document.getElementById('game');
+const $time = document.getElementById('time');
 
 let score = 0;
+let isGameStarted = false;
 
 $start.addEventListener('click', startGame);
 $game.addEventListener('click', handleBoxClick);
 
 function startGame() {
   $start.classList.add('hide');
+  isGameStarted = true;
   $game.style.background = '#fff';
+  let interval = setInterval(function () {
+    let time = parseFloat($time.textContent);
+
+    if (time <= 0) {
+      clearInterval(interval);
+      endGame();
+    } else {
+      $time.textContent = (time - 0.1).toFixed(1);
+    }
+  }, 100);
   renderBox();
 }
 
+function endGame() {
+  isGameStarted = false;
+}
+
 function handleBoxClick(event) {
-  if (event.target.dataset) {
-    console.log(event.target.dataset);
+  if (!isGameStarted) {
+    return;
+  }
+  if (event.target.dataset.box) {
     score++;
     renderBox();
   }
