@@ -1,6 +1,11 @@
 const $start = document.getElementById('start');
 const $game = document.getElementById('game');
 const $time = document.getElementById('time');
+const $result = document.getElementById('result');
+//переменная для установки таймера
+const $timeHeader = document.getElementById('time-header');
+//переменная для установки результата
+const $resultHeader = document.getElementById('result-header');
 
 let score = 0;
 let isGameStarted = false;
@@ -9,6 +14,11 @@ $start.addEventListener('click', startGame);
 $game.addEventListener('click', handleBoxClick);
 
 function startGame() {
+  score = 0;
+  setGameTime();
+  $timeHeader.classList.remove('hide');
+  $resultHeader.classList.add('hide');
+
   $start.classList.add('hide');
   isGameStarted = true;
   $game.style.background = '#fff';
@@ -25,8 +35,24 @@ function startGame() {
   renderBox();
 }
 
+function setGameScore() {
+  $result.textContent = score.toString();
+}
+
+function setGameTime() {
+  let time = 5;
+  $time.textContent = time.toFixed(1);
+}
+
 function endGame() {
   isGameStarted = false;
+  setGameScore();
+  //начальное окно после истечения таймера(Что показать что скрыть)
+  $start.classList.remove('hide');
+  $game.innerHTML = '';
+  $game.style.backgroundColor = '#ccc';
+  $timeHeader.classList.add('hide');
+  $resultHeader.classList.remove('hide');
 }
 
 function handleBoxClick(event) {
